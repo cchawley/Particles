@@ -12,6 +12,19 @@ using System.Diagnostics;
 
 namespace ParticleSystemStarter
 {
+    /// <summary>
+    /// A delegate for spawning particles
+    /// </summary>
+    /// <param name="particle">The particle to spawn</param>
+    public delegate void ParticleSpawner(ref Particle particle);
+
+    /// <summary>
+    /// A delegate for updating particles
+    /// </summary>
+    /// <param name="deltaT">The seconds elapsed between frames</param>
+    /// <param name="particle">The particle to update</param>
+    public delegate void ParticleUpdater(float deltaT, ref Particle particle);
+
     public class ParticleSystem
     {
         /// <summary>
