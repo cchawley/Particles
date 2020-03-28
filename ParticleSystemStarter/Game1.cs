@@ -1,6 +1,13 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
+
 
 namespace ParticleSystemStarter
 {
@@ -13,6 +20,10 @@ namespace ParticleSystemStarter
         SpriteBatch spriteBatch;
         ParticleSystem particleSystem;
         Texture2D particleTexture;
+        /// <summary>
+        /// A random number generator used by the system 
+        /// </summary>
+        Random random = new Random();
 
         public Game1()
         {
@@ -47,6 +58,30 @@ namespace ParticleSystemStarter
             particleSystem = new ParticleSystem(GraphicsDevice, 1000, particleTexture);
             particleSystem.Emitter = new Vector2(100, 100);
             particleSystem.SpawnPerFrame = 4;
+
+            // Set the SpawnParticle method
+            particleSystem.SpawnParticle = (ref Particle particle) =>
+            {
+                MouseState mouse = Mouse.GetState();
+                particle.Position = new Vector2(mouse.X, mouse.Y);
+                particle.Velocity = new Vector2(
+                    MathHelper.Lerp(-50, 50, (float)random.NextDouble()), // X between -50 and 50
+                    MathHelper.Lerp(0, 100, (float)random.NextDouble()) // Y between 0 and 100
+                    );
+                particle.Acceleration = 0.1f * new Vector2(0, (float)-random.NextDouble());
+                particle.Color = Color.Gold;
+                particle.Scale = 1f;
+                particle.Life = 1.0f;
+            };
+
+            // Set the UpdateParticle method
+            particleSystem.UpdateParticle = (float deltaT, ref Particle particle) =>
+            {
+                particle.Velocity += deltaT * particle.Acceleration;
+                particle.Position += deltaT * particle.Velocity;
+                particle.Scale -= deltaT;
+                particle.Life -= deltaT;
+            };
         }
 
         /// <summary>
